@@ -1,5 +1,5 @@
 from tastypie.responses import ResponseHandler
-
+from exceptions import *
 
 class BadHeaderError(ValueError):
     pass
@@ -43,38 +43,6 @@ class CustomResponse(object):
             if '\n' in value or '\r' in value:
                 raise BadHeaderError("Header values can't contain newlines (got %r)" % (value))
             yield value
-
-class CustomResponseError(Exception):
-    rbox_response = None
-    def __init__(self, response):
-        self.rbox_response = response
-
-class CustomResponseErrorUnauthorized(CustomResponseError):
-    pass
-
-
-class CustomResponseErrorBadRequest(CustomResponseError):
-    pass
-
-
-class CustomResponseErrorMethodNotAllowed(CustomResponseError):
-    pass
-
-
-class CustomResponseErrorTooManyRequests(CustomResponseError):
-    pass
-
-
-
-
-class CustomResponseErrorNotFound(CustomResponseError):
-    pass
-
-
-class  CustomResponseErrorNotImplemented(CustomResponseError):
-    pass
-    
-        
         
 class CustomResponseUnauthorized(CustomResponse):
     status_code = 401

@@ -1,6 +1,29 @@
-class ImmediateRboxResponse(Exception):
-    """ Class for sending immediate error messages"""
-    
-    response = Exception    
+class CustomResponseError(Exception):
+    rbox_response = None
+
     def __init__(self, response):
-        self.response = response
+        self.rbox_response = response
+
+
+class CustomResponseErrorUnauthorized(CustomResponseError):
+    pass
+
+
+class CustomResponseErrorBadRequest(CustomResponseError):
+    pass
+
+
+class CustomResponseErrorMethodNotAllowed(CustomResponseError):
+    pass
+
+
+class CustomResponseErrorTooManyRequests(CustomResponseError):
+    pass
+    
+
+class CustomResponseErrorNotFound(CustomResponseError):
+    pass
+
+
+class  CustomResponseErrorNotImplemented(CustomResponseError):
+    pass        
