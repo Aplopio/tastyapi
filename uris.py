@@ -1,18 +1,23 @@
 from requests import CustomRequestFactory
 
+
 def mock_get_request(user, _format, **extra):
     qs = "format=%s" % _format
     return CustomRequestFactory().get(user, qs, **extra)
 
+
 def mock_post_request(user, data, accept_type, **extra):
     return CustomRequestFactory().post(user, data, accept_type, **extra)
+
 
 def mock_delete_request(user, **extra):
     return CustomRequestFactory().delete(user, **extra)
 
+
 def mock_put_request(user, data, accept_type, **extra):
     extra.update({'REQUEST_METHOD': 'PUT'})
     return mock_post_request(user, data, accept_type, **extra)
+
 
 def mock_patch_request(user, data, accept_type, **extra):
     extra.update({'REQUEST_METHOD': 'PATCH'})
@@ -25,7 +30,6 @@ class ResourceListURI(object):
         self.kwargs = {}
         if parent_related_name:
             self.kwargs = {parent_related_name: parent_obj_pk}
-
 
     def __getitem__(self, pk):
         return self.resource.get_resource_uri_rbox(obj_pk=pk)        

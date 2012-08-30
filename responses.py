@@ -1,6 +1,7 @@
 from tastypie.responses import ResponseHandler
 from exceptions import *
 
+
 class BadHeaderError(ValueError):
     pass
 
@@ -27,7 +28,6 @@ class CustomResponse(object):
 
     def __getitem__(self, header):
         return self._headers[header.lower()][1]
-
     
     def _convert_to_ascii(self, *values):
         """Converts all values to ascii strings."""
@@ -44,32 +44,42 @@ class CustomResponse(object):
                 raise BadHeaderError("Header values can't contain newlines (got %r)" % (value))
             yield value
         
+
 class CustomResponseUnauthorized(CustomResponse):
     status_code = 401
+
 
 class CustomResponseNoContent(CustomResponse):
     status_code = 204
 
+
 class CustomResponseAccepted(CustomResponse):
     status_code = 202
+
 
 class CustomResponseBadRequest(CustomResponse):
     status_code = 400
 
+
 class CustomResponseMethodNotAllowed(CustomResponse):
     status_code = 405
     
+
 class CustomResponseTooManyRequests(CustomResponse):
     status_code = 429
+
 
 class CustomResponseMultipleChoices(CustomResponse):
     status_code = 300
 
+
 class CustomResponseNotFound(CustomResponse):
     status_code = 404
 
+
 class CustomResponseNotImplemented(CustomResponse):
     status_code = 501
+
 
 class CustomResponseCreated(CustomResponse):
     status_code = 201

@@ -2,10 +2,11 @@ from tastypie.api import Api
 from django.core.exceptions import ImproperlyConfigured
 from uris import ResourceListURI
 
+
 class RboxApi(Api):
     def __init__(self, api_name="v1"):
         self._rbox_registry = {}
-        super(RboxApi, self).__init__(api_name="v1")        
+        super(RboxApi, self).__init__(api_name="v1")
 
     def handle_add_resource(self, resource):    
         resource_name = getattr(resource._meta, 'resource_name', None)

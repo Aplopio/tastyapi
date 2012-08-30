@@ -58,15 +58,13 @@ class Resource(TastypieResource):
         return resource_uri
 
     def get_via_uri_customrequest(self, uri, request):
-        return self.obj_get(request=request, **{'pk': uri.pk})
-        
+        return self.obj_get(request=request, **{'pk': uri.pk})        
 
     class Meta:
         serializer = RboxSerializer()
         response_handler = CustomResponseHandler()
         authorization = DjangoAuthorization()
         always_return_data = True
-
 
 
 class ModelResource(Resource, TastypieModelResource):

@@ -4,7 +4,7 @@ from tastypie.fields import ApiField, CharField, FileField, IntegerField,\
                      ForeignKey as TastypieForeignKey, OneToOneField, ToManyField as TastypieToManyField, ManyToManyField as TastypieManyToManyField,\
                      OneToManyField, TimeField
 
-from uris import ResourceURI, ResourceListURI
+from uris import ResourceURI
 
 
 class RelatedField(TastypieRelatedField):
@@ -24,11 +24,9 @@ class ForeignKey(ToOneField):
     pass
 
 
-
 class ToManyField(RelatedField, TastypieToManyField):
     def __init__(self, *args, **kwargs):
         RelatedField.__init__(self, *args, **kwargs)
-
 
 
 class SubResourceField(ToManyField):
@@ -36,7 +34,7 @@ class SubResourceField(ToManyField):
         if not 'related_name' in kwargs:
             raise TypeError('Please specify a related name')
 
-        super(SubResourceField,self).__init__(*args, **kwargs)
+        super(SubResourceField, self).__init__(*args, **kwargs)
         self.readonly = True
         
         
