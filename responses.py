@@ -1,7 +1,3 @@
-from tastypie.responses import ResponseHandler
-from exceptions import *
-
-
 class BadHeaderError(ValueError):
     pass
 
@@ -95,48 +91,3 @@ class CustomResponseCreated(CustomResponse):
         self.location = location    
 
 
-class CustomResponseHandler(ResponseHandler):
-    def handle_cache_control_customrequest(self, request, response):
-        return response
-
-    def create_response_customrequest(self, request, content, content_type=None, **response_kwargs):
-        return CustomResponse(content)
-
-    def get_default_response_class_customrequest(self, request):
-        return CustomResponse
-
-    def get_unauthorized_response_class_customrequest(self, request):
-        return CustomResponseUnauthorized    
-
-    def get_unauthorized_request_response_customrequest(self, request):
-        raise CustomResponseErrorUnauthorized(response=CustomResponseUnauthorized())
-
-    def get_created_response_class_customrequest(self, request):
-        return CustomResponseCreated
-
-    def get_no_content_response_customrequest(self, request):
-        return CustomResponseNoContent()
-
-    def get_accepted_response_class_customrequest(self, request):
-        return CustomResponseAccepted
-
-    def get_bad_request_response_customrequest(self, request, content):
-        raise CustomResponseErrorBadRequest(response=CustomResponseBadRequest(content))
-        
-    def get_method_notallowed_response_customresponse(self, request, content):
-        raise CustomResponseErrorMethodNotAllowed(response=CustomResponseMethodNotAllowed(content))
-
-    def get_too_many_request_response_customrequest(self, request):
-        raise CustomResponseErrorTooManyRequests(response=CustomResponseTooManyRequests())
-
-    def get_multiple_choices_response_customrequest(self, request, content):
-        return CustomResponseMultipleChoices(content)
-
-    def get_not_found_response_customrequest(self, request):
-        raise CustomResponseErrorNotFound(response=CustomResponseNotFound())
-
-    def get_created_response_customrequest(self, request, location):
-        return CustomResponseCreated(location=location)
-
-    def get_not_implemented_response_customrequest(self, request):
-        raise CustomResponseErrorNotImplemented(response = CustomResponseNotImplemented())

@@ -7,6 +7,7 @@ import re
 BOUNDARY = 'BoUnDaRyStRiNg'
 MULTIPART_CONTENT = 'multipart/form-data; boundary=%s' % BOUNDARY
 CONTENT_TYPE_RE = re.compile('.*; charset=([\w\d-]+);?')
+from response_dispatcher import CustomResponseDispatcher
 
 
 class UnreadablePostError(IOError):
@@ -155,4 +156,8 @@ class CustomRequestFactory(RequestFactory):
         return self.request(**r)                                              
 
     def request(self, **request):
-        return CustomRequest(self._base_environ(**request))    
+        return CustomRequest(self._base_environ(**request))
+
+
+from tastypie import response_router_obj
+response_router_obj[CustomRequest] = CustomResponseDispatcher()

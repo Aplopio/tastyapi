@@ -1,6 +1,5 @@
-from tastypie_resources import Resource as TastypieResource,  ModelResource as TastypieModelResource
+from tastypie.resources import Resource as TastypieResource,  ModelResource as TastypieModelResource
 from serializers import RboxSerializer
-from responses import CustomResponseHandler
 from uris import ResourceURI, ResourceListURI
 from tastypie.bundle import Bundle
 from tastypie.authorization import DjangoAuthorization
@@ -62,7 +61,6 @@ class Resource(TastypieResource):
 
     class Meta:
         serializer = RboxSerializer()
-        response_handler = CustomResponseHandler()
         authorization = DjangoAuthorization()
         always_return_data = True
 
