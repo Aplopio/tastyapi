@@ -42,9 +42,9 @@ class ResourceListURI(object):
         kwargs.update(self.kwargs)
         return self.resource.wrap_view('dispatch_list')(request, **kwargs)
 
-    def create(self, user, post_data, accept_type="application/rbox", **kwargs):
+    def create(self, user, data, accept_type="application/rbox", **kwargs):
         kwargs.update(self.kwargs)
-        request = mock_post_request(user=user, post_data=post_data, accept_type=accept_type)
+        request = mock_post_request(user, data, accept_type)
         return self.resource.wrap_view('dispatch_list')(request, **kwargs)
 
     def delete(self, user, **kwargs):
@@ -54,7 +54,7 @@ class ResourceListURI(object):
 
     def update(self, user, data, accept_type="application/rbox", **delete_kwargs):
         delete_kwargs.update(self.kwargs)                
-        request = mock_put_request(user=user, data=data, accept_type=accept_type)
+        request = mock_put_request(user, data, accept_type=accept_type)
         return self.resource.wrap_view('dispatch_list')(request, **delete_kwargs)
         
 
@@ -77,10 +77,10 @@ class ResourceURI(object):
         return self.resource.wrap_view('dispatch_detail')(request, **kwargs)
 
     def update(self, user, data, accept_type="application/rbox", **kwargs):
-        request = mock_put_request(user=user, data=data, accept_type=accept_type)
+        request = mock_put_request(user, data, accept_type)
         return self.resource.wrap_view('dispatch_detail')(request, **kwargs)
 
     def patch(self, user, data, accept_type="application/rbox", **kwargs):
-        request = mock_patch_request(user=user, data=data, accept_type=accept_type)
+        request = mock_patch_request(user, data, accept_type)
         kwargs.update({'pk': self.pk})
         return self.resource.wrap_view('dispatch_detail')(request, **kwargs)
