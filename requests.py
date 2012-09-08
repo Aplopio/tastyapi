@@ -131,9 +131,8 @@ class CustomRequestFactory(RequestFactory):
 
     def post(self, user, data, accept_type, content_type=MULTIPART_CONTENT, **extra):
         "Construct a POST request."
-
         ##fuck still something to do with http exists
-        ##http_accept
+        ##the http_accept header
         
         r = {
             'CONTENT_LENGTH': len(data),

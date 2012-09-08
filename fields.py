@@ -5,6 +5,8 @@ from tastypie.fields import ApiField, CharField, FileField, IntegerField,\
                      OneToManyField, TimeField
 
 from uris import ResourceURI
+from tastypie.exceptions import ApiFieldError
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 
 class RelatedField(TastypieRelatedField):
@@ -30,11 +32,28 @@ class ToManyField(RelatedField, TastypieToManyField):
 
 
 class SubResourceField(ToManyField):
+    sub_resource_field=True
+    
     def __init__(self, *args, **kwargs):
         if not 'related_name' in kwargs:
             raise TypeError('Please specify a related name')
-
         super(SubResourceField, self).__init__(*args, **kwargs)
         self.readonly = True
         
+    def get_related_resource(self, related_instance):
+        """
+        Instaniates the related resource.
+        """
+        resource_obj = getattr(self, 'resource_obj')
+        resource_pk = getattr(self, 'resource_pk')
+        related_resource = self.to_class(api_name=self.api_name, parent_resource=resource_obj, parent_pk=resource_pk)
         
+
+        # Fix the ``api_name`` if it's not present.
+        if related_resource._meta.api_name is None:
+            if self._resource and not self._resource._meta.api_name is None:
+                related_resource._meta.api_name = self._resource._meta.api_name
+
+        # Try to be efficient about DB queries.
+        related_resource.instance = related_instance
+        return related_resource
