@@ -39,7 +39,7 @@ class SubResourceField(ToManyField):
         super(SubResourceField, self).__init__(*args, **kwargs)
         self.readonly = True
         
-    def get_related_resource(self, related_instance, bundle):
+    def get_related_resource(self, bundle):
         """
         Instaniates the related resource.
         """
@@ -53,8 +53,7 @@ class SubResourceField(ToManyField):
             if self._resource and not self._resource._meta.api_name is None:
                 related_resource._meta.api_name = self._resource._meta.api_name
 
-        # Try to be efficient about DB queries.
-        related_resource.instance = related_instance
+
         return related_resource
 
     def dehydrate(self, bundle):
@@ -91,16 +90,11 @@ class SubResourceField(ToManyField):
 
             return []
 
-        self.m2m_resources = []
-        m2m_dehydrated = []
+        m2m_dehydrated = {}
 
         # TODO: Also model-specific and leaky. Relies on there being a
         #       ``Manager`` there.
-        for m2m in the_m2ms.all():
-            m2m_resource = self.get_related_resource(m2m, bundle)
-            m2m_bundle = Bundle(obj=m2m, request=bundle.request)
-            self.m2m_resources.append(m2m_resource)
-            m2m_dehydrated.append(self.dehydrate_related(m2m_bundle, m2m_resource))
-
+        m2m_resource = self.get_related_resource(bundle)
+        m2m_dehydrated.update({'resource_uri': m2m_resource.get_resource_uri()})
+        m2m_dehydrated.update({'count': the_m2ms.all().count()})
         return m2m_dehydrated
-
