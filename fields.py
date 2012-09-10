@@ -3,7 +3,7 @@ from tastypie.fields import ApiField, CharField, FileField, IntegerField,\
                      DateField, DateTimeField, RelatedField as TastypieRelatedField, ToOneField as TastypieToOneField,\
                      ForeignKey as TastypieForeignKey, OneToOneField, ToManyField as TastypieToManyField, ManyToManyField as TastypieManyToManyField,\
                      OneToManyField, TimeField
-
+from tastypie.bundle import Bundle
 from uris import ResourceURI
 from tastypie.exceptions import ApiFieldError
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -32,7 +32,6 @@ class ToManyField(RelatedField, TastypieToManyField):
 
 
 class SubResourceField(ToManyField):
-    sub_resource_field=True
     
     def __init__(self, *args, **kwargs):
         if not 'related_name' in kwargs:
@@ -40,12 +39,12 @@ class SubResourceField(ToManyField):
         super(SubResourceField, self).__init__(*args, **kwargs)
         self.readonly = True
         
-    def get_related_resource(self, related_instance):
+    def get_related_resource(self, related_instance, bundle):
         """
         Instaniates the related resource.
         """
         resource_obj = getattr(self, 'resource_obj')
-        resource_pk = getattr(self, 'resource_pk')
+        resource_pk = bundle.obj.pk
         related_resource = self.to_class(api_name=self.api_name, parent_resource=resource_obj, parent_pk=resource_pk)
         
 
@@ -57,3 +56,51 @@ class SubResourceField(ToManyField):
         # Try to be efficient about DB queries.
         related_resource.instance = related_instance
         return related_resource
+
+    def dehydrate(self, bundle):
+        if not bundle.obj or not bundle.obj.pk:
+            if not self.null:
+                raise ApiFieldError("The model '%r' does not have a primary key and can not be used in a ToMany context." % bundle.obj)
+
+            return []
+
+        the_m2ms = None
+        previous_obj = bundle.obj
+        attr = self.attribute
+
+        if isinstance(self.attribute, basestring):
+            attrs = self.attribute.split('__')
+            the_m2ms = bundle.obj
+
+            for attr in attrs:
+                previous_obj = the_m2ms
+                try:
+                    the_m2ms = getattr(the_m2ms, attr, None)
+                except ObjectDoesNotExist:
+                    the_m2ms = None
+
+                if not the_m2ms:
+                    break
+
+        elif callable(self.attribute):
+            the_m2ms = self.attribute(bundle)
+
+        if not the_m2ms:
+            if not self.null:
+                raise ApiFieldError("The model '%r' has an empty attribute '%s' and doesn't allow a null value." % (previous_obj, attr))
+
+            return []
+
+        self.m2m_resources = []
+        m2m_dehydrated = []
+
+        # TODO: Also model-specific and leaky. Relies on there being a
+        #       ``Manager`` there.
+        for m2m in the_m2ms.all():
+            m2m_resource = self.get_related_resource(m2m, bundle)
+            m2m_bundle = Bundle(obj=m2m, request=bundle.request)
+            self.m2m_resources.append(m2m_resource)
+            m2m_dehydrated.append(self.dehydrate_related(m2m_bundle, m2m_resource))
+
+        return m2m_dehydrated
+
